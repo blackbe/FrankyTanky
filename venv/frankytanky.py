@@ -194,11 +194,14 @@ def message_to_screen(msg, color, y_displace=0, size="medium"):
     gameDisplay.blit(textSurf, textRect)
 
 
-def button(text, x, y, width, height, inactive_color, active_color):
+def button(text, x, y, width, height, inactive_color, active_color, action = None):
     cur = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
 
     if x + width > cur[0] > x and y + height > cur[1] > y:
         pygame.draw.rect(gameDisplay, active_color, (x, y, width, height))
+        if click[0] == 1:
+            print("BUTTON CLICKED!")
     else:
         pygame.draw.rect(gameDisplay, inactive_color, (x, y, width, height))
 
