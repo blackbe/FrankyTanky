@@ -10,7 +10,7 @@ pygame.init()
 white = (255, 255, 255)
 black = (0, 0, 0)
 
-red = (200, 0, 0)
+red = (180, 0, 0)
 light_red = (255, 0, 0)
 
 yellow =(200, 200, 0)
@@ -25,6 +25,9 @@ display_height = 600
 appleThickness = 30
 block_size = 20
 FPS = 10
+
+mainTankX = display_width * 0.9
+mainTankY = display_height * 0.9
 
 smallfont = pygame.font.SysFont("stencil", 15)
 medfont = pygame.font.SysFont("stencil", 25)
@@ -96,11 +99,11 @@ def pause():
 
 def quitScreen():
     gameDisplay.fill(white)
-    message_to_screen("Tanks for playing!",
+    message_to_screen("Thanks for playing!",
                       green,
                       size="medium")
     pygame.display.update()
-    time.sleep(2)  # not going to keep this here
+    time.sleep(2)
     return
 
 
@@ -110,8 +113,8 @@ def score(score):
 
 
 def game_intro():
-    intro = True
     global FPS
+    intro = True
 
     while intro:
         for event in pygame.event.get():
@@ -120,23 +123,7 @@ def game_intro():
                 pygame.quit()
                 quit()
 
-            if event.type == pygame.KEYDOWN:
-                if event.key ==pygame.K_1:
-                    FPS = 5
-                    intro = False
-                if event.key == pygame.K_2:
-                    FPS = 10
-                    intro = False
-                if event.key == pygame.K_3:
-                    FPS = 15
-                    intro = False
-                if event.key == pygame.K_4:
-                    FPS = 25
-                    intro = False
-                if event.key == pygame.K_q:
-                    quitScreen()
-                    pygame.quit()
-                    quit()
+
         gameDisplay.fill(white)
         message_to_screen("Welcome to Franky Tanky!",
                           green,
@@ -151,25 +138,16 @@ def game_intro():
         message_to_screen("The more enemies you destroy, the harder they get.",
                           black,
                           20)
-        # message_to_screen("Choose your skill level:",
-        #                   black,
-        #                   80)
-        # message_to_screen("1: Beginner, 2: Intermediate, 3: Advanced, 4: Professional",
-        #                   black,
-        #                   100)
 
-
-
-
-        button("play", 150, 350, 100, 50, green, light_green)
-        button("controls", 350, 350, 100, 50, yellow, light_yellow)
-        button("quit", 550, 350, 100, 50, red, light_red)
+        button("play", 150, 500, 100, 50, green, light_green, action="play")
+        button("controls", 350, 500, 100, 50, yellow, light_yellow, action="controls")
+        button("quit", 550, 500, 100, 50, red, light_red, action="quit")
 
         message_to_screen("Press P to pause, or Q to quit",
                           black,
                           160)
         pygame.display.update()
-        clock.tick(10)
+        clock.tick(FPS)
 
 
 def text_objects(text, color, size):
@@ -194,22 +172,66 @@ def message_to_screen(msg, color, y_displace=0, size="medium"):
     gameDisplay.blit(textSurf, textRect)
 
 
+def tank(x, y):
+    pygame.draw.circle(gameDisplay, yellow, (int(x), int(y)), 20)
+
+def game_controls():
+    gcont = True
+
+    while gcont:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quitScreen()
+                pygame.quit()
+                quit()
+
+        gameDisplay.fill(white)
+        message_to_screen("Controls",
+                          green,
+                          -120,
+                          size="large")
+        message_to_screen("Fire: Spacebar",
+                          black,
+                          -40)
+        message_to_screen("Move Turret: Up and Down arrows",
+                          black,
+                          -10)
+        message_to_screen("Move Tank: Left and Right arrows",
+                          black,
+                          20)
+        message_to_screen("Pause: P", black, 90)
+
+        button("play", 150, 500, 100, 50, green, light_green, action="play")
+        button("main", 350, 500, 100, 50, yellow, light_yellow, action="main")
+        button("quit", 550, 500, 100, 50, red, light_red, action="quit")
+
+        pygame.display.update()
+        clock.tick(15)
+
 def button(text, x, y, width, height, inactive_color, active_color, action = None):
     cur = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
     if x + width > cur[0] > x and y + height > cur[1] > y:
         pygame.draw.rect(gameDisplay, active_color, (x, y, width, height))
-        if click[0] == 1:
-            print("BUTTON CLICKED!")
+        if click[0] == 1 and action != None:
+            if action == "quit":
+                pygame.quit()
+                quit()
+            if action == "controls":
+                game_controls()
+            if action == "play":
+                gameLoop()
+            if action == "main":
+                game_intro()
     else:
         pygame.draw.rect(gameDisplay, inactive_color, (x, y, width, height))
 
     text_to_button(text, black, x, y, width, height)
 
 def gameLoop():
-    global direction
     global FPS
+    global direction
 
     direction = "right"
     gameExit = False
@@ -265,6 +287,8 @@ def gameLoop():
                     pause()
 
         gameDisplay.fill(white)
+
+        tank(mainTankX, mainTankY)
 
         pygame.display.update()
 
