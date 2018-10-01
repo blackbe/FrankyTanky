@@ -22,12 +22,16 @@ light_green = (0, 255, 0)
 display_width = 800
 display_height = 600
 
-appleThickness = 30
-block_size = 20
 FPS = 10
 
 mainTankX = display_width * 0.9
 mainTankY = display_height * 0.9
+
+tankWidth = 40
+tankHeight = 20
+
+turretWidth = 3
+wheelWidth = 5
 
 smallfont = pygame.font.SysFont("stencil", 15)
 medfont = pygame.font.SysFont("stencil", 25)
@@ -173,7 +177,18 @@ def message_to_screen(msg, color, y_displace=0, size="medium"):
 
 
 def tank(x, y):
-    pygame.draw.circle(gameDisplay, yellow, (int(x), int(y)), 20)
+    x = int(x)
+    y = int(y)
+    pygame.draw.circle(gameDisplay, yellow, (x , y), int(tankHeight / 2))
+    pygame.draw.rect(gameDisplay, yellow, (x - tankHeight, y, tankWidth, tankHeight))
+
+    pygame.draw.line(gameDisplay, yellow, (x, y), (x - 10, y - 15), turretWidth)
+
+    #pygame.draw.circle(gameDisplay, yellow, (x - 15, y + 20), wheelWidth)
+
+    for x in range(-20,25, 5):
+        pygame.draw.circle(gameDisplay, yellow, (int(mainTankX) + x, y + 20), wheelWidth)
+
 
 def game_controls():
     gcont = True
@@ -258,18 +273,6 @@ def gameLoop():
                     if event.key == pygame.K_q:
                         gameExit = True
                         gameOver = False
-                    elif event.key == pygame.K_1:
-                        FPS = 5
-                        gameLoop()
-                    elif event.key == pygame.K_2:
-                        FPS = 10
-                        gameLoop()
-                    elif event.key == pygame.K_3:
-                        FPS = 15
-                        gameLoop()
-                    elif event.key == pygame.K_4:
-                        FPS = 25
-                        gameLoop()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
